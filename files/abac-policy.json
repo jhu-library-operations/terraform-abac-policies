@@ -1,0 +1,108 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "ec2RunInstances",
+            "Effect": "Allow",
+            "Action": "ec2:RunInstances",
+            "Resource": "arn:aws:ec2:*:*:instance/*",
+            "Condition": {
+                "StringEquals": {
+                    "aws:RequestTag/access-team": "${aws:PrincipalTag/access-team}",
+                    "aws:RequesetTag/access-project": "${aws:PrincipalTag/access-project}"
+                },
+                "ForAllValues:StringEquals": {
+                    "aws:TagKeys": [
+                        "access-project",
+                        "access-team",
+                        "Project",
+                        "Name",
+                        "CreatedBy"
+                    ]
+                }
+            }
+        },
+        {
+            "Sid": "ec2RunInstancesContinued",
+            "Effect": "Allow",
+            "Action": "ec2:RunInstance",
+            "Resource": [
+                "arn:aws:ec2:*:*:subnet/*",
+                "arn:aws:ec2:*:*:key-pair/*",
+                "arn:aws:ec2:*:*:launch-template/*",
+                "arn:aws:ec2:*::snapshot/*",
+                "arn:aws:ec2:*:*:volume/*",
+                "arn:aws:ec2:*:*:security-group/*",
+                "arn:aws:ec2:*:*:placement-group/*",
+                "arn:aws:ec2:*:*:network-interface/*",
+                "arn:aws:ec2:*::image/*"
+            ]
+        },
+        {
+            "Sid": "ec2CreateTags",
+            "Effect": "Allow",
+            "Action": "ec2:CreateTags",
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {
+                    "ec2:CreateAction": "RunInstances"
+                }
+            }
+        },
+        {
+            "Sid": "ec2TerminateInstances",
+            "Effect": "Allow",
+            "Action": "ec2:TerminateInstances",
+            "Resource": "*",
+            "Condition": {
+                "ForAllValues:StringEquals": {
+                    "aws:ResourceTag/access-team": "${aws:PrincipalTag/access-team}",
+                    "aws:ResourceTag/access-project": "${aws:PrincipalTag/access-project}"
+                }
+            }
+        },
+        {
+            "Sid": "DescribeEc2Resources",
+            "Effect": "Allow",
+            "Action": [ 
+                "ec2:Describe*"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "CreateVPC",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:CreateVpc"
+            ],
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {
+                    "aws:RequestTag/access-team": "${aws:PrincipalTag/access-team}",
+                    "aws:RequestTag/access-project": "${aws:PrincipalTag/access-project}"
+                },
+                "ForAllValues:StringEquals": {
+                    "aws:TagKeys": [
+                        "access-project",
+                        "access-team",
+                        "Name",
+                        "Project",
+                        "CreatedBy"
+                    ]
+                }
+            }
+        },
+        {
+            "Sid": "LogGroupDescribe",
+            "Effect": "Allow",
+            "Action": "logs:DescribeLogGroups",
+            "Resource": "arn:aws:logs:*:*:log-group:*",
+            "Condition": {
+                "ForAllValues:StringEquals": {
+                    "aws:ResourceTag/access-team": "${aws:PrincipalTag/access-team}",
+                    "aws:ResourceTag/access-project": "${aws:PrincipalTag/access-project}"
+                }
+            }
+        }
+    ]
+}
